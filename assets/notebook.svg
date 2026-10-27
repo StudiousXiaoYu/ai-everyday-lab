@@ -1,1 +1,99 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" fill="none"><defs><linearGradient id="bg" x2="640" y2="560" gradientUnits="userSpaceOnUse"><stop stop-color="#dfe6d0"/><stop offset="1" stop-color="#becbb3"/></linearGradient><linearGradient id="page" x2="360" y2="460" gradientUnits="userSpaceOnUse"><stop stop-color="#fffdf5"/><stop offset="1" stop-color="#eadfc8"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#254735" flood-opacity=".17"/></filter></defs><rect width="640" height="560" rx="30" fill="url(#bg)"/><circle cx="536" cy="86" r="130" fill="#edf0dd"/><path d="M518 485V242" stroke="#729475" stroke-width="5"/><path d="M518 345c-66-3-102-45-95-91 64-7 100 32 95 91ZM518 302c61-5 89-44 80-87-56 0-87 36-80 87ZM518 401c-80-4-116-50-107-104 72-7 111 39 107 104Z" fill="#3b694e"/><ellipse cx="355" cy="465" rx="224" ry="36" fill="#73896b" opacity=".15"/><g transform="rotate(-9 257 282)" filter="url(#s)"><rect x="102" y="74" width="296" height="398" rx="13" fill="#bf7b4c"/><rect x="113" y="65" width="296" height="398" rx="13" fill="url(#page)"/><path d="M149 66v398" stroke="#dfd1b7" stroke-width="2"/><g stroke="#9b825f" stroke-width="6" stroke-linecap="round"><path d="M101 99h30M101 137h30M101 175h30M101 213h30M101 251h30M101 289h30M101 327h30M101 365h30M101 403h30M101 441h30"/></g><text x="179" y="146" fill="#294d3d" font-size="17" font-family="sans-serif" letter-spacing="3">MY LITTLE IDEAS</text><text x="177" y="213" fill="#193e30" font-size="35" font-family="Microsoft YaHei,sans-serif" font-weight="700">我的</text><text x="177" y="263" fill="#193e30" font-size="35" font-family="Microsoft YaHei,sans-serif" font-weight="700">学习笔记。</text><path d="M176 297h164M176 316h135" stroke="#cdc9b4" stroke-width="2"/><path d="M291 410v-70M291 377c-39 0-45-25-38-42 30 1 43 20 38 42ZM291 394c34-2 47-21 43-41-30-1-43 15-43 41Z" fill="#72936a"/></g><g transform="rotate(8 452 370)" filter="url(#s)"><rect x="364" y="268" width="190" height="196" rx="18" fill="#fffdf8"/><text x="388" y="310" font-size="17" fill="#254735" font-family="Microsoft YaHei,sans-serif" font-weight="700">一点点，做出来</text><g fill="#e9eddf"><rect x="386" y="335" width="145" height="24" rx="6"/><rect x="386" y="367" width="145" height="24" rx="6"/></g><g fill="#bdc9ad"><circle cx="399" cy="347" r="5"/><circle cx="399" cy="379" r="5"/></g><rect x="386" y="407" width="145" height="29" rx="7" fill="#244f3e"/><path d="m454 419 5 5 9-9" stroke="#fff" stroke-width="2"/></g><circle cx="83" cy="459" r="21" fill="#e99a6b"/><path d="m468 110 20 10-20 10-20-10Z" fill="#e99a6b"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" fill="none">
+  <defs>
+    <linearGradient id="bg" x2="640" y2="560" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#dfe6d0" />
+      <stop offset="1" stop-color="#becbb3" />
+    </linearGradient>
+    <linearGradient id="page" x2="360" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fffdf5" />
+      <stop offset="1" stop-color="#eadfc8" />
+    </linearGradient>
+    <filter id="s">
+      <feDropShadow
+        dx="0"
+        dy="16"
+        stdDeviation="16"
+        flood-color="#254735"
+        flood-opacity=".17"
+      />
+    </filter>
+  </defs>
+  <rect width="640" height="560" rx="30" fill="url(#bg)" />
+  <circle cx="536" cy="86" r="130" fill="#edf0dd" />
+  <path d="M518 485V242" stroke="#729475" stroke-width="5" />
+  <path
+    d="M518 345c-66-3-102-45-95-91 64-7 100 32 95 91ZM518 302c61-5 89-44 80-87-56 0-87 36-80 87ZM518 401c-80-4-116-50-107-104 72-7 111 39 107 104Z"
+    fill="#3b694e"
+  />
+  <ellipse cx="355" cy="465" rx="224" ry="36" fill="#73896b" opacity=".15" />
+  <g transform="rotate(-9 257 282)" filter="url(#s)">
+    <rect x="102" y="74" width="296" height="398" rx="13" fill="#bf7b4c" />
+    <rect x="113" y="65" width="296" height="398" rx="13" fill="url(#page)" />
+    <path d="M149 66v398" stroke="#dfd1b7" stroke-width="2" />
+    <g stroke="#9b825f" stroke-width="6" stroke-linecap="round">
+      <path
+        d="M101 99h30M101 137h30M101 175h30M101 213h30M101 251h30M101 289h30M101 327h30M101 365h30M101 403h30M101 441h30"
+      />
+    </g>
+    <text
+      x="179"
+      y="146"
+      fill="#294d3d"
+      font-size="17"
+      font-family="sans-serif"
+      letter-spacing="3"
+    >
+      MY LITTLE IDEAS
+    </text>
+    <text
+      x="177"
+      y="213"
+      fill="#193e30"
+      font-size="35"
+      font-family="Microsoft YaHei,sans-serif"
+      font-weight="700"
+    >
+      我的
+    </text>
+    <text
+      x="177"
+      y="263"
+      fill="#193e30"
+      font-size="35"
+      font-family="Microsoft YaHei,sans-serif"
+      font-weight="700"
+    >
+      学习笔记。
+    </text>
+    <path d="M176 297h164M176 316h135" stroke="#cdc9b4" stroke-width="2" />
+    <path
+      d="M291 410v-70M291 377c-39 0-45-25-38-42 30 1 43 20 38 42ZM291 394c34-2 47-21 43-41-30-1-43 15-43 41Z"
+      fill="#72936a"
+    />
+  </g>
+  <g transform="rotate(8 452 370)" filter="url(#s)">
+    <rect x="364" y="268" width="190" height="196" rx="18" fill="#fffdf8" />
+    <text
+      x="388"
+      y="310"
+      font-size="17"
+      fill="#254735"
+      font-family="Microsoft YaHei,sans-serif"
+      font-weight="700"
+    >
+      一点点，做出来
+    </text>
+    <g fill="#e9eddf">
+      <rect x="386" y="335" width="145" height="24" rx="6" />
+      <rect x="386" y="367" width="145" height="24" rx="6" />
+    </g>
+    <g fill="#bdc9ad">
+      <circle cx="399" cy="347" r="5" />
+      <circle cx="399" cy="379" r="5" />
+    </g>
+    <rect x="386" y="407" width="145" height="29" rx="7" fill="#244f3e" />
+    <path d="m454 419 5 5 9-9" stroke="#fff" stroke-width="2" />
+  </g>
+  <circle cx="83" cy="459" r="21" fill="#e99a6b" />
+  <path d="m468 110 20 10-20 10-20-10Z" fill="#e99a6b" />
+</svg>

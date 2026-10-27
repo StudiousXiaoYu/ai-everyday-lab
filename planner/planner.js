@@ -1,21 +1,251 @@
-'use strict';
-const KEY='everyday-planner-v1',today=App.date();
-function makeDay(){return {tasks:[{id:App.id(),text:'读完一篇想读的文章',done:true},{id:App.id(),text:'整理一页学习笔记',done:false},{id:App.id(),text:'试着做一个小练习',done:false},{id:App.id(),text:'写下今天的新发现',done:false}],notes:'今天想记住的：\n先做一件具体的小事。\n有了想法，就试试看。'};}
-function validDay(day){return day&&typeof day.notes==='string'&&day.notes.length<=20000&&Array.isArray(day.tasks)&&day.tasks.length<=500&&day.tasks.every(t=>t&&typeof t.id==='string'&&typeof t.text==='string'&&t.text.length<=100&&typeof t.done==='boolean');}
-function validState(value){return value&&value.version===1&&value.days&&typeof value.days==='object'&&!Array.isArray(value.days)&&Object.keys(value.days).length<=3660&&Object.entries(value.days).every(([d,v])=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&validDay(v));}
-let state=App.read(KEY,null);if(!validState(state))state={version:1,days:{[today]:makeDay()}};
-let selected=today,weekAnchor=today,editingId=null;
-const $=id=>document.getElementById(id);
-function day(){return state.days[selected]||{tasks:[],notes:''};}
-function writableDay(){if(!state.days[selected])state.days[selected]={tasks:[],notes:''};return state.days[selected];}
-function persist(){const ok=App.save(KEY,state);$('save-status').textContent=ok?'● 已保存到当前浏览器':'浏览器未能保存，请导出备份';}
-function renderWeek(){const d=new Date(`${weekAnchor}T12:00:00`);d.setDate(d.getDate()-((d.getDay()+6)%7));const start=App.date(d),end=App.after(6,start);$('week-label').textContent=`${start.slice(5).replace('-',' / ')} — ${end.slice(5).replace('-',' / ')}`;$('week').replaceChildren();const labels=['MON','TUE','WED','THU','FRI','SAT','SUN'];for(let i=0;i<7;i++){const date=App.after(i,start),b=App.el('button',{type:'button',className:`day${date===selected?' active':''}${date===today?' today':''}${state.days[date]?.tasks.length?' has-tasks':''}`,'aria-label':`${date}${date===today?' 今天':''}`,'aria-pressed':String(date===selected)});b.append(App.el('span',{text:labels[i]}),App.el('b',{text:String(Number(date.slice(-2)))}),App.el('i',{'aria-hidden':'true'}));b.onclick=()=>{selected=date;render();};$('week').append(b);}}
-function render(){renderWeek();const current=day();$('notes').value=current.notes;$('tasks').replaceChildren();if(!current.tasks.length)$('tasks').append(App.el('div',{className:'empty',text:'这一天还是空白的。\n从一个小目标开始吧。'}));for(const task of current.tasks){const row=App.el('div',{className:`task${task.done?' done':''}`});const check=App.el('input',{type:'checkbox',className:'task-check','aria-label':`完成：${task.text}`});check.checked=task.done;check.onchange=()=>{task.done=check.checked;persist();render();};const copy=App.el('div',{className:'task-copy'},App.el('b',{text:task.text}),App.el('small',{text:task.done?'已经完成 · 好好积累':'给自己一点专注的时间'}));const actions=App.el('div',{className:'task-actions'});const edit=App.el('button',{type:'button',text:'✎','aria-label':`编辑：${task.text}`});edit.onclick=()=>{editingId=task.id;$('edit-task-input').value=task.text;$('edit-task-dialog').showModal();};const remove=App.el('button',{type:'button',text:'×','aria-label':`删除：${task.text}`});remove.onclick=()=>{writableDay().tasks=current.tasks.filter(t=>t.id!==task.id);persist();render();};actions.append(edit,remove);row.append(check,copy,actions);$('tasks').append(row);}const done=current.tasks.filter(t=>t.done).length,total=current.tasks.length,percent=total?Math.round(done/total*100):0;$('done-count').textContent=`${done} / ${total} 已完成`;$('percent').textContent=`${percent}%`;$('progress-fill').style.width=`${percent}%`;document.querySelector('[role=progressbar]').setAttribute('aria-valuenow',percent);$('encouragement').textContent=total&&done===total?'今天的小目标，都完成啦。':total?'已经开始，就很好。':'留一点空白，也很好。';}
-$('add-form').onsubmit=e=>{e.preventDefault();const text=$('new-task').value.trim();if(!text)return;if(day().tasks.length>=500)return App.toast('当天任务已经很多了，先完成几件吧。');writableDay().tasks.push({id:App.id(),text,done:false});$('new-task').value='';persist();render();};
-$('notes').oninput=()=>{writableDay().notes=$('notes').value;persist();};
-$('prev-week').onclick=()=>{weekAnchor=App.after(-7,weekAnchor);selected=App.after(-7,selected);render();};$('next-week').onclick=()=>{weekAnchor=App.after(7,weekAnchor);selected=App.after(7,selected);render();};$('today-button').onclick=()=>{selected=today;weekAnchor=today;render();};
-$('close-edit').onclick=()=>$('edit-task-dialog').close();$('edit-task-form').onsubmit=e=>{e.preventDefault();const text=$('edit-task-input').value.trim();if(!text)return;const task=day().tasks.find(t=>t.id===editingId);if(task){task.text=text;persist();render();}$('edit-task-dialog').close();};
-$('reset-day').onclick=()=>App.confirm('恢复当天示例？',`会替换 ${selected} 的任务和笔记，其他日期保持原样。`,()=>{state.days[selected]=makeDay();persist();render();});
-$('export-data').onclick=()=>App.download(`日常计划-${today}.json`,{app:'everyday-planner',...state});
-document.querySelector('.import-label').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('import-data').click();}};
-$('import-data').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>3*1024*1024)throw Error('备份文件过大');const value=JSON.parse(await file.text());if(value.app!=='everyday-planner'||!validState(value))throw Error('这不是有效的日常计划备份');App.confirm('导入备份？','备份中的同日期记录会覆盖本机对应记录。其他日期保持原样。',()=>{state.days={...state.days,...value.days};persist();render();App.toast('备份已导入。');});}catch(err){App.toast(err.message||'读取失败');}e.target.value='';};render();
+"use strict";
+const KEY = "everyday-planner-v1",
+  today = App.date();
+function makeDay() {
+  return {
+    tasks: [
+      { id: App.id(), text: "读完一篇想读的文章", done: true },
+      { id: App.id(), text: "整理一页学习笔记", done: false },
+      { id: App.id(), text: "试着做一个小练习", done: false },
+      { id: App.id(), text: "写下今天的新发现", done: false },
+    ],
+    notes: "今天想记住的：\n先做一件具体的小事。\n有了想法，就试试看。",
+  };
+}
+function validDay(day) {
+  return (
+    day &&
+    typeof day.notes === "string" &&
+    day.notes.length <= 20000 &&
+    Array.isArray(day.tasks) &&
+    day.tasks.length <= 500 &&
+    day.tasks.every(
+      (t) =>
+        t &&
+        typeof t.id === "string" &&
+        typeof t.text === "string" &&
+        t.text.length <= 100 &&
+        typeof t.done === "boolean",
+    )
+  );
+}
+function validState(value) {
+  return (
+    value &&
+    value.version === 1 &&
+    value.days &&
+    typeof value.days === "object" &&
+    !Array.isArray(value.days) &&
+    Object.keys(value.days).length <= 3660 &&
+    Object.entries(value.days).every(
+      ([d, v]) => /^\d{4}-\d{2}-\d{2}$/.test(d) && validDay(v),
+    )
+  );
+}
+let state = App.read(KEY, null);
+if (!validState(state)) state = { version: 1, days: { [today]: makeDay() } };
+let selected = today,
+  weekAnchor = today,
+  editingId = null;
+const $ = (id) => document.getElementById(id);
+function day() {
+  return state.days[selected] || { tasks: [], notes: "" };
+}
+function writableDay() {
+  if (!state.days[selected]) state.days[selected] = { tasks: [], notes: "" };
+  return state.days[selected];
+}
+function persist() {
+  const ok = App.save(KEY, state);
+  $("save-status").textContent = ok
+    ? "● 已保存到当前浏览器"
+    : "浏览器未能保存，请导出备份";
+}
+function renderWeek() {
+  const d = new Date(`${weekAnchor}T12:00:00`);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  const start = App.date(d),
+    end = App.after(6, start);
+  $("week-label").textContent =
+    `${start.slice(5).replace("-", " / ")} — ${end.slice(5).replace("-", " / ")}`;
+  $("week").replaceChildren();
+  const labels = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+  for (let i = 0; i < 7; i++) {
+    const date = App.after(i, start),
+      b = App.el("button", {
+        type: "button",
+        className: `day${date === selected ? " active" : ""}${date === today ? " today" : ""}${state.days[date]?.tasks.length ? " has-tasks" : ""}`,
+        "aria-label": `${date}${date === today ? " 今天" : ""}`,
+        "aria-pressed": String(date === selected),
+      });
+    b.append(
+      App.el("span", { text: labels[i] }),
+      App.el("b", { text: String(Number(date.slice(-2))) }),
+      App.el("i", { "aria-hidden": "true" }),
+    );
+    b.onclick = () => {
+      selected = date;
+      render();
+    };
+    $("week").append(b);
+  }
+}
+function render() {
+  renderWeek();
+  const current = day();
+  $("notes").value = current.notes;
+  $("tasks").replaceChildren();
+  if (!current.tasks.length)
+    $("tasks").append(
+      App.el("div", {
+        className: "empty",
+        text: "这一天还是空白的。\n从一个小目标开始吧。",
+      }),
+    );
+  for (const task of current.tasks) {
+    const row = App.el("div", { className: `task${task.done ? " done" : ""}` });
+    const check = App.el("input", {
+      type: "checkbox",
+      className: "task-check",
+      "aria-label": `完成：${task.text}`,
+    });
+    check.checked = task.done;
+    check.onchange = () => {
+      task.done = check.checked;
+      persist();
+      render();
+    };
+    const copy = App.el(
+      "div",
+      { className: "task-copy" },
+      App.el("b", { text: task.text }),
+      App.el("small", {
+        text: task.done ? "已经完成 · 好好积累" : "给自己一点专注的时间",
+      }),
+    );
+    const actions = App.el("div", { className: "task-actions" });
+    const edit = App.el("button", {
+      type: "button",
+      text: "✎",
+      "aria-label": `编辑：${task.text}`,
+    });
+    edit.onclick = () => {
+      editingId = task.id;
+      $("edit-task-input").value = task.text;
+      $("edit-task-dialog").showModal();
+    };
+    const remove = App.el("button", {
+      type: "button",
+      text: "×",
+      "aria-label": `删除：${task.text}`,
+    });
+    remove.onclick = () => {
+      writableDay().tasks = current.tasks.filter((t) => t.id !== task.id);
+      persist();
+      render();
+    };
+    actions.append(edit, remove);
+    row.append(check, copy, actions);
+    $("tasks").append(row);
+  }
+  const done = current.tasks.filter((t) => t.done).length,
+    total = current.tasks.length,
+    percent = total ? Math.round((done / total) * 100) : 0;
+  $("done-count").textContent = `${done} / ${total} 已完成`;
+  $("percent").textContent = `${percent}%`;
+  $("progress-fill").style.width = `${percent}%`;
+  document
+    .querySelector("[role=progressbar]")
+    .setAttribute("aria-valuenow", percent);
+  $("encouragement").textContent =
+    total && done === total
+      ? "今天的小目标，都完成啦。"
+      : total
+        ? "已经开始，就很好。"
+        : "留一点空白，也很好。";
+}
+$("add-form").onsubmit = (e) => {
+  e.preventDefault();
+  const text = $("new-task").value.trim();
+  if (!text) return;
+  if (day().tasks.length >= 500)
+    return App.toast("当天任务已经很多了，先完成几件吧。");
+  writableDay().tasks.push({ id: App.id(), text, done: false });
+  $("new-task").value = "";
+  persist();
+  render();
+};
+$("notes").oninput = () => {
+  writableDay().notes = $("notes").value;
+  persist();
+};
+$("prev-week").onclick = () => {
+  weekAnchor = App.after(-7, weekAnchor);
+  selected = App.after(-7, selected);
+  render();
+};
+$("next-week").onclick = () => {
+  weekAnchor = App.after(7, weekAnchor);
+  selected = App.after(7, selected);
+  render();
+};
+$("today-button").onclick = () => {
+  selected = today;
+  weekAnchor = today;
+  render();
+};
+$("close-edit").onclick = () => $("edit-task-dialog").close();
+$("edit-task-form").onsubmit = (e) => {
+  e.preventDefault();
+  const text = $("edit-task-input").value.trim();
+  if (!text) return;
+  const task = day().tasks.find((t) => t.id === editingId);
+  if (task) {
+    task.text = text;
+    persist();
+    render();
+  }
+  $("edit-task-dialog").close();
+};
+$("reset-day").onclick = () =>
+  App.confirm(
+    "恢复当天示例？",
+    `会替换 ${selected} 的任务和笔记，其他日期保持原样。`,
+    () => {
+      state.days[selected] = makeDay();
+      persist();
+      render();
+    },
+  );
+$("export-data").onclick = () =>
+  App.download(`日常计划-${today}.json`, { app: "everyday-planner", ...state });
+document.querySelector(".import-label").onkeydown = (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    $("import-data").click();
+  }
+};
+$("import-data").onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    if (file.size > 3 * 1024 * 1024) throw Error("备份文件过大");
+    const value = JSON.parse(await file.text());
+    if (value.app !== "everyday-planner" || !validState(value))
+      throw Error("这不是有效的日常计划备份");
+    App.confirm(
+      "导入备份？",
+      "备份中的同日期记录会覆盖本机对应记录。其他日期保持原样。",
+      () => {
+        state.days = { ...state.days, ...value.days };
+        persist();
+        render();
+        App.toast("备份已导入。");
+      },
+    );
+  } catch (err) {
+    App.toast(err.message || "读取失败");
+  }
+  e.target.value = "";
+};
+render();
