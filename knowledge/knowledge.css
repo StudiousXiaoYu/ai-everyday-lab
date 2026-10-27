@@ -675,7 +675,7 @@
     font-size: 48px;
   }
   .kb-hero h1 > br {
-    display: none;
+    display: block;
   }
   .kb-hero-copy > p > br {
     display: none;
@@ -835,5 +835,10 @@
   .welcome-steps {
     font-size: 8px;
     gap: 12px;
+  }
+}
+@media (max-width: 480px) {
+  .learning-aside {
+    grid-template-columns: 1fr;
   }
 }
